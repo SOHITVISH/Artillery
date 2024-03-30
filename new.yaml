@@ -1,0 +1,14 @@
+config:
+  target: "https://fakestoreapi.com"
+  phases:
+    - duration: 60
+      arrivalRate: 10
+
+scenarios:
+  - flow:
+      - get:
+          url: "/products"
+          capture:
+            - json: "$.length"
+              as: "productCount"
+      - log: "Retrieved {{ productCount }} products."

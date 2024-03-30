@@ -1,0 +1,42 @@
+config:
+  target: "https://fakestoreapi.com"
+  phases:
+    - duration: 300
+      arrivalRate: 20
+
+scenarios:
+  - name: "User Journey"
+    flow:
+      - loop:
+          - count: 5
+            continueOnError: false
+            do:
+              - get:
+                  url: "/products/{{ __random(1, 20) }}"
+                  capture:
+                    - json: "$.id"
+                      as: "productId"
+              - log: "User {{ __user.current }} fetched product {{ productId }}"
+              - think: 1
+      - loop:
+          - count: 3
+            continueOnError: false
+            do:
+              - post:
+                  url: "/carts"
+                  json:
+                    userId: "{{ __random(1, 10) }}"
+                    productId: "{{ __random(1, 20) }}"
+                    quantity: 1
+              - log: "User {{ __user.current }} added product to cart"
+              - think: 1
+      - loop:
+          - count: 2
+            continueOnError: false
+            do:
+              - post:
+                  url: "/carts/{{ __random(1, 10) }}"
+                  json:
+                    userId: "{{ __random(1, 10) }}"
+              - log: "User {{ __user.current }} checked out"
+              - think: 2

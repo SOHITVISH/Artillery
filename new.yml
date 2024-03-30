@@ -1,0 +1,25 @@
+config:
+  target: "https://fakestoreapi.com"
+  phases:
+    - duration: 120
+      arrivalRate: 10
+
+scenarios:
+  - flow:
+      - get:
+          url: "/products"
+          capture:
+            - json: "$[0].id"
+              as: "productId"
+      - log: "Random product ID: {{ productId }}"
+      - get:
+          url: "/products/{{ productId }}"
+      - log: "Retrieved product: {{ JSON.stringify(response.body) }}"
+      - post:
+          url: "/carts"
+          json:
+            userId: 1
+            productId: "{{ productId }}"
+            quantity: 1
+      - log: "Added product to cart: {{ JSON.stringify(response.body) }}"
+
